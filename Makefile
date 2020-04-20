@@ -3,17 +3,21 @@ BUILD_NUMBER ?= dev+$(shell date -u '+%Y%m%d%H%M%S')
 GO111MODULE = on
 export GO111MODULE
 
-ALL_LINUX = linux-amd64 \
-	linux-386 \
-	linux-ppc64le \
-	linux-arm-5 \
-	linux-arm-6 \
-	linux-arm-7 \
-	linux-arm64 \
-	linux-mips \
-	linux-mipsle \
-	linux-mips64 \
-	linux-mips64le
+
+ALL_LINUX = linux-arm-7 
+
+
+# ALL_LINUX = linux-amd64 \
+# 	linux-386 \
+# 	linux-ppc64le \
+# 	linux-arm-5 \
+# 	linux-arm-6 \
+# 	linux-arm-7 \
+# 	linux-arm64 \
+# 	linux-mips \
+# 	linux-mipsle \
+# 	linux-mips64 \
+# 	linux-mips64le
 
 ALL = $(ALL_LINUX) \
 	darwin-amd64 \

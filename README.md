@@ -91,3 +91,50 @@ Nebula was created at Slack Technologies, Inc by Nate Brown and Ryan Huber, with
 
 
 
+## My changes for Synology DS213j (alexandregz) 
+
+- changed socket option **unix.SO_REUSEPORT** to **unix.SO_REUSEADDR** into **udp_linux.go** file because SO_REUSEPORT was first included in kernel version 3.9 (https://github.com/coredns/coredns/issues/2239 and https://lwn.net/Articles/542629/)
+
+```go
+	if err = unix.SetsockoptInt(fd, unix.SOL_SOCKET, unix.SO_REUSEADDR, 1); err != nil {
+		return nil, fmt.Errorf("unable to set SO_REUSEADDR: %s", err)
+	}
+```
+
+```bash
+root@voyager:~# uname -a
+Linux voyager 3.2.40 #24922 Mon Aug 19 12:09:30 CST 2019 armv7l GNU/Linux synology_armada370_213j
+root@voyager:~# uname -r
+3.2.40
+```
+
+- compile with (modified to create only armv7 binaries)
+
+```bash
+alex@vosjod:~/Development/nebula/clone/nebula(compile_for_Synology_DS213j)$ make release-linux
+GOOS=linux \
+		GOARCH=arm \
+		GOARM=7 \
+		go build -trimpath -o build/linux-arm-7/nebula -ldflags "-X main.Build=dev+20200420224420" "./cmd/nebula"
+GOOS=linux \
+		GOARCH=arm \
+		GOARM=7 \
+		go build -trimpath -o build/linux-arm-7/nebula-cert -ldflags "-X main.Build=dev+20200420224422" ./cmd/nebula-cert
+tar -zcv -C build/linux-arm-7 -f build/nebula-linux-arm-7.tar.gz nebula nebula-cert
+a nebula
+a nebula-cert
+```
+
+- use binary as usual :-)
+
+```bash
+root@voyager:~/nebula# ./nebula -config config.yml
+INFO[0000] Firewall rule added                           firewallRule="map[caName: caSha: direction:outgoing endPort:0 groups:[] host:any ip:<nil> proto:0 startPort:0]"
+INFO[0000] Firewall rule added                           firewallRule="map[caName: caSha: direction:incoming endPort:0 groups:[] host:any ip:<nil> proto:1 startPort:0]"
+INFO[0000] Firewall rule added                           firewallRule="map[caName: caSha: direction:incoming endPort:443 groups:[laptop home] host: ip:<nil> proto:6 startPort:443]"
+INFO[0000] Firewall started                              firewallHash=
+INFO[0000] Main HostMap created                          network=192.168.100.1/24 preferredRanges="[]"
+INFO[0000] UDP hole punching enabled
+INFO[0000] Nebula interface is active                    build=dev+20200420222822 interface=nebula1 network=192.168.100.1/24 udpAddr="0.0.0.0:4242"
+```
+
